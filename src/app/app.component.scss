@@ -8,7 +8,6 @@ section {
 
   background: #dddddd;
 
-  .directive-tooltip {
     @apply my-5;
 
     h2 {
@@ -24,5 +23,28 @@ section {
 
       border: 1px solid gray;
     }
-  }
+
+    .directive-tooltip{
+        border-bottom: 1px solid black;
+        padding-bottom: 40px;
+    }
+
+    .directive-tooltip-position{
+        border-bottom: 1px solid black;
+        padding-bottom: 40px;
+
+        div {
+            display: grid;
+            grid-auto-columns: 1fr;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 60px 30px;
+            grid-template-areas:
+            ". ."
+            ". .";
+            justify-content: space-between;
+            justify-items: stretch;
+            align-items: stretch;
+        }
+    }
 }

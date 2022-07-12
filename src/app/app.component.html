@@ -1,41 +1,24 @@
 <section>
     <div class="directive-tooltip">
         <h2> == Directive Tooltip Atlas ==></h2>
-            <input
-              appToolTip
-              tooltip= "Static tooltip"
-              theme="white"
-              type="text"
-            />
+        <input appToolTip tooltip="Static tooltip" theme="white" type="text"/>
 
-            <input
-              appToolTip
-              [tooltip]="Dynamic"
-              theme="dark"
-              type="text"
-            />
+        <input appToolTip [tooltip]="Dynamic" theme="dark" type="text"/>
 
-            <input
-              appToolTip
-              [tooltip]="textDynamic"
-              theme="white"
-              type="text"
-            />
-      </div>
+        <input appToolTip [tooltip]="textDynamic" theme="white" type="text"/>
+    </div>
 
-  <!-- <div class="directive-tooltip">
-    <h2> Directive Tooltip ></h2>
-    <input
-      appToolTip
-      tooltip= "Static"
-      placeholder="Static"
-      type="text"
-    />
-    <input
-      appToolTip
-      [tooltip]="Dynamic"
-      placeholder="Dynamic"
-      type="text"
-    />
-  </div> -->
+    <div class="directive-tooltip-position">
+        <h2> Positions:</h2>
+
+        <div>
+            <input appToolTip tooltip="Position: Bottom" theme="white" type="text" position="bottom"/>
+
+            <input appToolTip tooltip="Position: Top" theme="dark" type="text" position="top"/>
+
+            <input appToolTip tooltip="Position: Left" theme="white" type="text" position="left"/>
+
+            <input appToolTip tooltip="Position: Right" theme="white" type="text" position="right"/>
+        </div>
+    </div>
 </section>

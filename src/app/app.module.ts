@@ -1,9 +1,10 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ToolTipDirective } from './shared/directives/tool-tip.directive';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -14,6 +15,7 @@ import { ToolTipDirective } from './shared/directives/tool-tip.directive';
     AppRoutingModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class AppModule { }
