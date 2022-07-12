@@ -22,21 +22,29 @@ export class ToolTipDirective implements OnDestroy {
     }
 
     @HostListener('mouseenter') onMouseEnter() {
+        console.log(this.tooltip)
+
         this.timer = setTimeout(() => {
             let x = this.el.nativeElement.getBoundingClientRect().left;
             let y = this.el.nativeElement.getBoundingClientRect().top;
 
             switch (this.position) {
                 case 'top':
+                    x = this.el.nativeElement.getBoundingClientRect().left + (this.el.nativeElement.offsetWidth / 2);
+                    y = this.el.nativeElement.getBoundingClientRect().top - (this.calculateHeightByLetters() + 6);
                     break;
 
                 case 'bottom':
+                    x = this.el.nativeElement.getBoundingClientRect().left + (this.el.nativeElement.offsetWidth / 2);
+                    y = this.el.nativeElement.getBoundingClientRect().top + (this.el.nativeElement.offsetHeight + 6);
                     break;
 
                 case 'left':
                     break;
 
                 case 'right':
+                    x = this.el.nativeElement.getBoundingClientRect().right ;
+                    y = this.el.nativeElement.getBoundingClientRect().top + (this.el.nativeElement.offsetHeight / 8);
                     break;
 
                 default:
@@ -55,13 +63,37 @@ export class ToolTipDirective implements OnDestroy {
     private createTooltipPopup(x: number, y: number, theme: string | null) {
         let toolTip = document.createElement('div');
 
-        toolTip.innerHTML = this.tooltip;
+        toolTip.innerHTML = `<p>${this.tooltip}</p>`
         toolTip.setAttribute("class", `tooltip-container theme-${theme}`);
         toolTip.style.top = y.toString() + "px";
         toolTip.style.left = x.toString() + "px";
+
         document.body.appendChild(toolTip);
 
         this.toolTipContent = toolTip;
+    }
+
+    private calculateHeightByLetters(): number {
+        let lines = Math.round(this.tooltip.length / 32);
+
+        if (lines == 0) return 26;
+
+        let heights = (lines * 16) + 12;
+
+        return heights;
+    }
+
+    private calculateWidthByLetters(): number {
+        let p = document.createElement('p');
+        p.innerHTML = this.tooltip;
+
+        let width = p.clientWidth;
+
+        if (width > 130) {
+            return 148.458;
+        } else {
+            return width + 24;
+        }
     }
 }
 
