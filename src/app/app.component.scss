@@ -1,0 +1,28 @@
+section {
+  @apply flex
+    w-full
+    h-full
+    justify-center
+    items-center
+    flex-col;
+
+  background: #dddddd;
+
+  .directive-tooltip {
+    @apply my-5;
+
+    h2 {
+      @apply p-4
+      text-center
+      font-semibold;
+    }
+
+    input {
+      @apply outline-none
+        p-1
+        mr-1;
+
+      border: 1px solid gray;
+    }
+  }
+}
