@@ -1,6 +1,6 @@
 import { Directive, ElementRef, HostListener, Input, OnDestroy } from '@angular/core';
 
-// <input appToolTip [tooltip]="'tooltip'" theme="theme"/>
+// <input appToolTip [tooltip]="'tooltip'" theme="theme" position="position"/>
 
 @Directive({
     selector: '[appToolTip]'
@@ -10,7 +10,7 @@ export class ToolTipDirective implements OnDestroy {
     @Input() tooltip = '';                        // ToolTip Text
     @Input() delay?= 190;                         // Optional Delay Input
     @Input() theme: string | null = 'white';      // Color Theme ('dark' // 'white' // null)
-    @Input() position: string | null = 'bottom';
+    @Input() position: string | null = 'bottom';  // Positions ('top' // 'bottom' // 'left' // 'right')
 
     private toolTipContent: any;
     private timer: any;
@@ -23,27 +23,20 @@ export class ToolTipDirective implements OnDestroy {
 
     @HostListener('mouseenter') onMouseEnter() {
         this.timer = setTimeout(() => {
-            let x, y;
+            let x = this.el.nativeElement.getBoundingClientRect().left;
+            let y = this.el.nativeElement.getBoundingClientRect().top;
 
-            switch(this.position) {
+            switch (this.position) {
                 case 'top':
-                    x = this.el.nativeElement.getBoundingClientRect().left + this.el.nativeElement.offsetWidth / 2;
-                    y = this.el.nativeElement.getBoundingClientRect().top + (this.el.nativeElement.offsetHeight - 66);
                     break;
 
                 case 'bottom':
-                    x = this.el.nativeElement.getBoundingClientRect().left + this.el.nativeElement.offsetWidth / 2;
-                    y = this.el.nativeElement.getBoundingClientRect().top + (this.el.nativeElement.offsetHeight + 6);
                     break;
 
                 case 'left':
-                    x = this.el.nativeElement.getBoundingClientRect().left - 48;
-                    y = this.el.nativeElement.getBoundingClientRect().top + 3;
                     break;
 
                 case 'right':
-                    x = this.el.nativeElement.getBoundingClientRect().left + 244;
-                    y = this.el.nativeElement.getBoundingClientRect().top + 3;
                     break;
 
                 default:
