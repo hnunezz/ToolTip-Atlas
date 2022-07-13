@@ -7,41 +7,30 @@ body {
     background: #dddddd;
 }
 
-.tooltip-container {
-    text-align: center;
-    z-index: 100;
-    position: fixed;
-    padding: 6px 12px;
-    font-size: 12px;
-    font-weight: 600;
-    line-height: initial;
+.tooltip {
     width: auto;
     max-width: 250px;
-    box-sizing: border-box;
+    position: absolute;
+    text-align: center;
+    font-size: 14px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    line-height: initial;
+    z-index: 1000;
     opacity: 0;
-    transform: translate(-50%, -30%);
-    animation: tooltip-slide 0.18s ease-out 0.5s;
-    animation-fill-mode: forwards;
+    animation: 0.18s ease-out;
     pointer-events: none;
 
-    &.theme-dark {
+    &-dark {
         color: white;
         background: #202124;
     }
 
-    &.theme-white {
+    &-white {
         color: #5e5e5e;
         background: white;
     }
 }
-
-@keyframes tooltip-slide {
-    0% {
-        opacity: 0;
-        transform: translate(-50%, -30%);
-    }
-    100% {
-        opacity: 1;
-        transform: translate(-50%, 0);
-    }
+.tooltip-show {
+    opacity: 1;
 }

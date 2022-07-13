@@ -8,7 +8,7 @@ import { ToolTipDirective } from './shared/directives/tool-tip.directive';
 @NgModule({
   declarations: [
     AppComponent,
-    ToolTipDirective
+    ToolTipDirective,
   ],
   imports: [
     BrowserModule,

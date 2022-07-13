@@ -1,107 +1,132 @@
-import { Directive, ElementRef, HostListener, Input, OnDestroy } from '@angular/core';
+import { Directive, ElementRef, HostListener, Input, OnDestroy, Renderer2 } from '@angular/core';
 
-// <input appToolTip [tooltip]="'tooltip'" theme="theme" position="position"/>
+/*
+    <Element appToolTip tooltip="tooltip" theme="theme" position="position" [delay]="10"><Element/>
+
+        -- tooltip:   Text that will fill the tooltip.
+
+        -- delay:     Delay to show content.
+
+        -- theme:     Light or dark theme selector.
+            |_ dark & white.
+
+        -- position:  Tooltip position referring to the component.
+            |_ top & bottom & left & right.
+
+
+     CSS Recommended:
+        .tooltip {
+            width: auto;
+            max-width: 250px;
+            position: absolute;
+            text-align: center;
+            font-size: 14px;
+            padding: 6px 10px;
+            border-radius: 4px;
+            line-height: initial;
+            z-index: 1000;
+            opacity: 0;
+            animation: 0.18s ease-out;
+            pointer-events: none;
+
+                &-dark {
+                    color: white;
+                    background: #202124;
+                }
+
+                &-white {
+                    color: #5e5e5e;
+                    background: white;
+                }
+        }
+
+        .tooltip-show {
+            opacity: 1;
+        }
+*/
 
 @Directive({
     selector: '[appToolTip]'
 })
-export class ToolTipDirective implements OnDestroy {
+export class ToolTipDirective {
 
-    @Input() tooltip = '';                        // ToolTip Text
-    @Input() delay?= 190;                         // Optional Delay Input
-    @Input() theme: string | null = 'white';      // Color Theme ('dark' // 'white' // null)
-    @Input() position: string | null = 'bottom';  // Positions ('top' // 'bottom' // 'left' // 'right')
+    @Input() tooltip: string = '';
+    @Input() delay: number = 100;
+    @Input() theme: string = 'white';
+    @Input() position: string = 'bottom';
 
-    private toolTipContent: any;
-    private timer: any;
+    private toolTipContent: any //HTMLElement
+    private offset: number = 10;
 
-    constructor(private el: ElementRef) { }
-
-    ngOnDestroy(): void {
-        if (this.toolTipContent) { this.toolTipContent.remove() }
-    }
+    constructor(private el: ElementRef, private renderer: Renderer2) { }
 
     @HostListener('mouseenter') onMouseEnter() {
-        console.log(this.tooltip)
-
-        this.timer = setTimeout(() => {
-            let x = this.el.nativeElement.getBoundingClientRect().left;
-            let y = this.el.nativeElement.getBoundingClientRect().top;
-
-            switch (this.position) {
-                case 'top':
-                    x = this.el.nativeElement.getBoundingClientRect().left + (this.el.nativeElement.offsetWidth / 2);
-                    y = this.el.nativeElement.getBoundingClientRect().top - (this.calculateHeightByLetters() + 6);
-                    break;
-
-                case 'bottom':
-                    x = this.el.nativeElement.getBoundingClientRect().left + (this.el.nativeElement.offsetWidth / 2);
-                    y = this.el.nativeElement.getBoundingClientRect().top + (this.el.nativeElement.offsetHeight + 6);
-                    break;
-
-                case 'left':
-                    break;
-
-                case 'right':
-                    x = this.el.nativeElement.getBoundingClientRect().right ;
-                    y = this.el.nativeElement.getBoundingClientRect().top + (this.el.nativeElement.offsetHeight / 8);
-                    break;
-
-                default:
-                    return;
-            }
-
-            this.createTooltipPopup(x, y, this.theme);
-        }, this.delay)
+        if (!this.toolTipContent) {
+            this.createToolTip();
+            this.setPosition();
+            this.renderer.addClass(this.toolTipContent, 'tooltip-show');
+        }
     }
 
     @HostListener('mouseleave') onMouseLeave() {
-        if (this.timer) clearTimeout(this.timer);
-        if (this.toolTipContent) { this.toolTipContent.remove() }
-    }
+        if (this.toolTipContent) {
+            this.renderer.removeClass(this.toolTipContent, 'tooltip-show');
 
-    private createTooltipPopup(x: number, y: number, theme: string | null) {
-        let toolTip = document.createElement('div');
-
-        toolTip.innerHTML = `<p>${this.tooltip}</p>`
-        toolTip.setAttribute("class", `tooltip-container theme-${theme}`);
-        toolTip.style.top = y.toString() + "px";
-        toolTip.style.left = x.toString() + "px";
-
-        document.body.appendChild(toolTip);
-
-        this.toolTipContent = toolTip;
-    }
-
-    private calculateHeightByLetters(): number {
-        let lines = Math.round(this.tooltip.length / 32);
-
-        if (lines == 0) return 26;
-
-        let heights = (lines * 16) + 12;
-
-        return heights;
-    }
-
-    private calculateWidthByLetters(): number {
-        let p = document.createElement('p');
-        p.innerHTML = this.tooltip;
-
-        let width = p.clientWidth;
-
-        if (width > 130) {
-            return 148.458;
-        } else {
-            return width + 24;
+            window.setTimeout(() => {
+                this.renderer.removeChild(document.body, this.toolTipContent);
+                this.toolTipContent = null;
+            }, this.delay);
         }
     }
+
+
+    private createToolTip() {
+        this.toolTipContent = this.renderer.createElement('span');
+
+        this.renderer.appendChild(
+            this.toolTipContent,
+            this.renderer.createText(this.tooltip)
+        );
+
+        this.renderer.appendChild(document.body, this.toolTipContent);
+
+        this.renderer.addClass(this.toolTipContent, 'tooltip');
+        this.renderer.addClass(this.toolTipContent, `tooltip-${this.position}`);
+        this.renderer.addClass(this.toolTipContent, `tooltip-${this.theme}`);
+        this.renderer.setStyle(this.toolTipContent, 'transition', `opacity ${this.delay}ms`);
+    }
+
+    private setPosition() {
+        const basePosition = this.el.nativeElement.getBoundingClientRect();
+        const tooltipPosition = this.toolTipContent.getBoundingClientRect();
+
+        const scrollPos = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+
+        let top, left;
+
+        switch (this.position) {
+            case 'top':
+                top = basePosition.top - tooltipPosition.height - this.offset;
+                left = basePosition.left + (basePosition.width - tooltipPosition.width) / 2;
+                break;
+
+            case 'bottom':
+                top = basePosition.bottom + this.offset;
+                left = basePosition.left + (basePosition.width - tooltipPosition.width) / 2;
+                break;
+
+            case 'left':
+                top = basePosition.top + (basePosition.height - tooltipPosition.height) / 2;
+                left = basePosition.left - tooltipPosition.width - this.offset;
+                break;
+
+            case 'right':
+                top = basePosition.top + (basePosition.height - tooltipPosition.height) / 2;
+                left = basePosition.right + this.offset;
+                break;
+        }
+
+        this.renderer.setStyle(this.toolTipContent, 'top', `${top + scrollPos}px`);
+        this.renderer.setStyle(this.toolTipContent, 'left', `${left}px`);
+    }
 }
-
-
-/*
-TIMEOUT FOR REMOVE AUTOMATICALY TOOLTIP
-
-setTimeout(() => {
-    if (this.myPopup) this.myPopup.remove();
-}, 1200);
-*/
