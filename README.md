@@ -1,7 +1,7 @@
 # ToolTipAtlas
 
 This repository is intended for the development of a ToolTip in the form of a directive
-with dynamic values and with the possibility of adding functionalities.
+with dynamic values and with the possibility of adding functionalities. <3
 
 **Front-end:** Angular, TypeScript
 
